@@ -1,17 +1,40 @@
-import { useRef,useState } from "react";
-import axios from " axios";
+import { useRef, useState } from "react";
+import axios from "axios";
 
-export default function CreatePollPage(){
-    const [ options, setOptions] = useState('','');
+export default function CreatePollPage() {
+  const questionRef = useRef();
+  const [options, setOptions] = useState(["", ""]);
 
-    axios.post('http:/localhost:5000/api/polls')
-    .then(()=> alert("poll created!"));
+  const addOption = () => setOptions([...options, ""]);
+  const updateOption = (i, val) => {
+    const newOptions = [...options];
+    newOptions[i] = val;
+    setOptions(newOptions);
+  };
 
-    return(
-        <div>
-            <h1>
-                Create New Poll
-            </h1>
-        </div>
-    )
+  const submitPoll = () => {
+    axios.post("http://localhost:5000/api/polls", {
+      question: questionRef.current.value,
+      options
+    }, {
+      headers: { Authorization: "Bearer MY_SECRET_TOKEN" }
+    }).then(() => alert("Poll created!"));
+  };
+
+  return (
+    <div>
+      <h1>Create New Poll</h1>
+      <input ref={questionRef} placeholder="Enter poll question" />
+      {options.map((opt, i) => (
+        <input
+          key={i}
+          value={opt}
+          placeholder={`Option ${i + 1}`}
+          onChange={(e) => updateOption(i, e.target.value)}
+        />
+      ))}
+      <button onClick={addOption}>Add Option</button>
+      <button onClick={submitPoll}>Submit Poll</button>
+    </div>
+  );
 }

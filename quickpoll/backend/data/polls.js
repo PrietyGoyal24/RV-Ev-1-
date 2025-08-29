@@ -10,4 +10,4 @@ let polls = [
     }
 ];
 
-Module.exports = polls;
+module.exports = polls;
